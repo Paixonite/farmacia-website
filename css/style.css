@@ -105,7 +105,7 @@ body.pagina-registro{
     align-items: center;
     /* height: 100vh; */
     background-color: black;
-    /* background: url(../images/background2.jpg) no-repeat;
+    /* background: url(../imagens/background2.jpg) no-repeat;
     background-size: covser;
     background-position: center; */
 }
@@ -126,76 +126,70 @@ body.pagina-registro{
     font-size: 40px;
     text-align: center;
 }
-
-/* Estilo para a área do switch */
+/* Container for the switch */
 .pagina-registro .input-box {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
+    gap: 8px;
 }
 
-/* Container do switch */
-.pagina-registro .switch-container {
+/* Label styling */
+.pagina-registro .input-box label {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Switch container */
+.pagina-registro s.switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 30px;
-    margin-left: 10px;
+    width: 50px;
+    height: 25px;
 }
 
-/* Oculta o checkbox original */
-.pagina-registro .switch-container input[type="checkbox"] {
+/* Hide default checkbox */
+.pagina-registro #accountTypeSwitch {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-/* Estilo da barra do switch */
-.pagina-registro .switch-slider {
+/* Track of the switch */
+.pagina-registro .switch::before {
+    content: "";
     position: absolute;
-    cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 30px;
+    border-radius: 25px;
+    transition: background-color 0.3s;
 }
 
-/* Estilo da bola dentro do switch */
-.pagina-registro .switch-slider::before {
-    position: absolute;
+/* Knob of the switch */
+.pagina-registro .switch::after {
     content: "";
-    height: 22px;
-    width: 22px;
+    position: absolute;
+    top: 3px;
     left: 4px;
-    bottom: 4px;
+    width: 20px;
+    height: 20px;
     background-color: white;
-    transition: 0.4s;
     border-radius: 50%;
+    transition: transform 0.3s;
 }
 
-/* Quando o checkbox estiver selecionado */
-.pagina-registro .switch-container input:checked + .switch-slider {
-    background-color: #4CAF50; /* Cor verde */
+/* When checkbox is checked */
+.pagina-registro #accountTypeSwitch:checked + .switch::before {
+    background-color: #4caf50;
 }
 
-.pagina-registro .switch-container input:checked + .switch-slider::before {
-    transform: translateX(30px); /* Movimenta a bola para a direita */
+.pagina-registro #accountTypeSwitch:checked + .switch::after {
+    transform: translateX(25px);
 }
 
-/* Estilos de texto para os labels Cliente e Funcionário */
-.pagina-registro .input-box label {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-}
-
-
-
-.pagina-registro .wrapper .input-box{
+.pagina-registro .input-box{
     position: relative;
     width: 100%;
     height: 50px;
