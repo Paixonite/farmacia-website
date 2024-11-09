@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Página de registro</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <script>
+        function toggleAccountType() {
+            // Obtenha o botão de alternância
+            const isEmployee = document.getElementById("accountTypeSwitch").checked;
+            
+            // Mostra/oculta os campos conforme o tipo de conta
+            document.getElementById("employeeFields").style.display = isEmployee ? "block" : "none";
+            document.getElementById("clientFields").style.display = isEmployee ? "none" : "block";
+        }
+    </script>
+</head>
+<body class="pagina-registro">
+    <div class="wrapper">
+        <form action="registro.php" method="post">
+            <h1>Registro</h1>
+
+            <!-- Tipo de Conta -->
+            <h5>Tipo de conta:</h5>
+            <div class="input-box">
+                <label for="accountTypeSwitch">Funcionário</label>
+                <input type="checkbox" id="accountTypeSwitch" onclick="toggleAccountType()">
+                <label for="accountTypeSwitch">Cliente</label>
+            </div>
+
+            <!-- Campos para Funcionário -->
+            <div id="employeeFields" style="display: none;">
+                <h5>Name:</h5>
+                <div class="input-box">
+                    <input type="text" name="nome" placeholder="Nome" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <h5>Senha:</h5>
+                <div class="input-box">
+                    <input type="password" name="senha" placeholder="Senha" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <h5>CPF:</h5>
+                <div class="input-box">
+                    <input type="text" name="id_funcionario" placeholder="000.000.000-00" required>
+                </div>
+            </div>
+
+            <!-- Campos para Cliente -->
+            <div id="clientFields" style="display: block;">
+                <h5>Name:</h5>
+                <div class="input-box">
+                    <input type="text" name="nome" placeholder="Nome" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <h5>Senha:</h5>
+                <div class="input-box">
+                    <input type="password" name="senha" placeholder="Senha" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <h5>CPF:</h5>
+                <div class="input-box">
+                    <input type="text" name="cpf" placeholder="000.000.000-00" required>
+                </div>
+                <h5>Endereço:</h5>
+                <div class="input-box">
+                    <input type="text" name="endereco" placeholder="Av. Antônio Carlos..." required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Registrar</button>
+
+            <div class="link-login">
+                <p>Já tem uma conta?
+                    <a href="pagina_login.html">Entrar.</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
