@@ -1,110 +1,89 @@
 <?php
-// Start the session
-session_start();
 
-// Redirect if not logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.html");
-    exit();
-}
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Include the database connection file
 require 'db.php';
 
-// Fetch all users from the login table
-$stmt = $conn->prepare("SELECT username, access_type, user_id FROM login");
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Ensure cpf and senha are set
+    if (isset($_POST['cpf']) && isset($_POST['senha'])) {
+        $cpf = $_POST['cpf'];
+        $senha = $_POST['senha'];
+
+        // Check if the cpf exists in the funcionarios table
+        $stmt = $conn->prepare("SELECT id_funcionario AS id, cpf, senha, nivel_acesso FROM funcionarios WHERE cpf = :cpf");
+        $stmt->bindParam(':cpf', $cpf);
+        $stmt->execute();
+        $funcionario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($funcionario) {
+            echo "CPF encontrado na tabela funcionarios.";
+            // cpf found in funcionarios table, verify password
+            if (password_verify($senha, $funcionario['senha'])) {
+                // Start the session
+                session_start();
+                session_unset();
+                session_destroy();
+                session_start();
+
+                // Set session variables for funcionario
+                $_SESSION['id'] = $funcionario['id'];
+                $_SESSION['nivel_acesso'] = $funcionario['nivel_acesso'];
+
+                // Redirect to the specific index
+                if($_SESSION['nivel_acesso'] == 1)
+                    header("Location: pagina_index_atendente.php");
+                if($_SESSION['nivel_acesso'] == 3)
+                    header("Location: pagina_index_gerente.php");
+                if($_SESSION['nivel_acesso'] == 3)
+                    header("Location: pagina_index_admin.php");
+
+                exit();
+            } else {
+                echo "Senha inválida!";
+                exit();
+            }
+        }
+
+        // Check if the cpf exists in the clientes table
+        $stmt = $conn->prepare("SELECT id_cliente AS id, cpf, senha FROM clientes WHERE cpf = :cpf");
+        $stmt->bindParam(':cpf', $cpf);
+        $stmt->execute();
+        $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($cliente) {
+            echo "CPF encontrado na tabela clientes.";
+            // cpf found in clientes table, verify password
+            if (password_verify($senha, $cliente['senha'])) {
+                // Start the session
+                session_start();
+                session_unset();
+                session_destroy();
+                session_start();
+
+                // Set session variables for cliente
+                $_SESSION['id'] = $cliente['id'];
+
+                // Redirect to the cliente index
+                header("Location: pagina_index_cliente.html");
+                exit();
+            } else {
+                echo "Senha inválida!";
+                exit();
+            }
+        }
+
+        // If cpf was not found in either table
+        echo "cpf não encontrado!";
+    } else {
+        echo "cpf e senha são obrigatórios!";
+    }
+}
 
 // Close the database connection
 $conn = null;
+
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>User Management</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body class="index-page">
-
-<div class="links">
-        <a href="login.html">login</a>
-        <a href="register.html">register</a>
-</div>
-<div class="user-info">
-    <h1>User List</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Access Type</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Display each user
-            foreach ($users as $user) {
-                echo "<tr>";
-                echo "<td>" . $user['username'] . "</td>";
-                echo "<td>" . $user['access_type'] . "</td>";
-                echo "<td>";
-
-                // Check user access type from session
-                $accessType = $_SESSION['access_type'] ?? null;
-                $userId = $user['user_id']; // Use 'user_id' here
-
-                // Show edit and delete buttons based on access type
-                if (($accessType == "user" && $_SESSION['user_id'] == $userId) ||
-                    ($accessType == "manager" && ($_SESSION['user_id'] == $userId || $user['access_type'] == "user"))) {
-                    echo "<a href='edit_page.php?id=" . $userId . "'>EDIT</a>";
-                } elseif ($accessType == "admin") {
-                    echo "<a href='edit_page.php?id=" . $userId . "'>EDIT</a> ";
-                    echo "<button onclick='deleteUser(" . $userId . ")'>DELETE</button>";
-                } else {
-                    echo "none";
-                }
-
-                echo "</td>";
-                echo "</tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-</div>
-
-<script>
-   function deleteUser(userId) {
-    console.log(`Attempting to delete user with ID: ${userId}`);  // Debugging log
-
-    if (confirm('Are you sure you want to delete this user?')) {
-        fetch('delete_user.php', {
-            method: 'POST', // Simulate DELETE
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `id=${userId}&_method=DELETE` // Pass ID and method
-        })
-        .then(response => {
-            console.log(response.status); // Debugging: Check the status code
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data); // Debugging log for response
-            if (data.message) {
-                alert(data.message);
-                location.reload(); // Reload the page after successful deletion
-            } else {
-                alert('Failed to delete user');
-            }
-        })
-        .catch(error => console.error('Fetch error:', error));  // Debugging: Check for any fetch errors
-    }
-}
-</script>
-
-</body>
-</html>
