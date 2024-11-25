@@ -20,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $funcionario = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($funcionario) {
-            echo "CPF encontrado na tabela funcionarios.";
             // cpf found in funcionarios table, verify password
             if (password_verify($senha, $funcionario['senha'])) {
                 // Start the session
