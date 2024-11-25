@@ -34,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $conn->commit();
-        echo "Registro realizado com sucesso!";
         header("Location: pagina_login.html");
         exit();
     } catch (Exception $e) {
