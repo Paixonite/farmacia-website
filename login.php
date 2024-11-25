@@ -8,44 +8,78 @@ error_reporting(E_ALL);
 require 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ensure nome and senha are set
-    if (isset($_POST['nome']) && isset($_POST['senha'])) {
-        $nome = $_POST['nome'];
+    // Ensure cpf and senha are set
+    if (isset($_POST['cpf']) && isset($_POST['senha'])) {
+        $cpf = $_POST['cpf'];
         $senha = $_POST['senha'];
 
-        // Prepare the SQL statement to fetch user information including ID and nivel_acesso
-
-        // a gente precisa resolver isso aqui
-        $stmt = $conn->prepare("SELECT id, nome, senha FROM login WHERE nome = :nome");
-        $stmt->bindParam(':nome', $nome);
-
-        // Execute the query
+        // Check if the cpf exists in the funcionarios table
+        $stmt = $conn->prepare("SELECT id_funcionario AS id, cpf, senha, nivel_acesso FROM funcionarios WHERE cpf = :cpf");
+        $stmt->bindParam(':cpf', $cpf);
         $stmt->execute();
+        $funcionario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Fetch the result
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($funcionario) {
+            echo "CPF encontrado na tabela funcionarios.";
+            // cpf found in funcionarios table, verify password
+            if (password_verify($senha, $funcionario['senha'])) {
+                // Start the session
+                session_start();
+                session_unset();
+                session_destroy();
+                session_start();
 
-        if ($row && senha_verify($senha, $row['senha'])) {
-            // Start the session
-            session_start();
-            session_unset();
-            session_destroy();
-            session_start();
+                // Set session variables for funcionario
+                $_SESSION['id'] = $funcionario['id'];
+                $_SESSION['nivel_acesso'] = $funcionario['nivel_acesso'];
 
-            // Set session variables
-            $_SESSION['id'] = $row['id'];  // User ID from the database
-            $_SESSION['nivel_acesso'] = $row['nivel_acesso'];  // Access type from the database
+                // Redirect to the specific index
+                if($_SESSION['nivel_acesso'] == 1)
+                    header("Location: pagina_index_atendente.php");
+                if($_SESSION['nivel_acesso'] == 3)
+                    header("Location: pagina_index_gerente.php");
+                if($_SESSION['nivel_acesso'] == 3)
+                    header("Location: pagina_index_admin.php");
 
-            // Redirect to index.php
-            // ou entao pro funcionario
-            header("Location: pagina_index_cliente.html");
-            exit();
-        } else {
-            // Invalid credentials
-            echo "Nome ou senha inválidos!";
+                exit();
+            } else {
+                echo "Senha inválida!";
+                exit();
+            }
         }
+
+        // Check if the cpf exists in the clientes table
+        $stmt = $conn->prepare("SELECT id_cliente AS id, cpf, senha FROM clientes WHERE cpf = :cpf");
+        $stmt->bindParam(':cpf', $cpf);
+        $stmt->execute();
+        $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($cliente) {
+            echo "CPF encontrado na tabela clientes.";
+            // cpf found in clientes table, verify password
+            if (password_verify($senha, $cliente['senha'])) {
+                // Start the session
+                session_start();
+                session_unset();
+                session_destroy();
+                session_start();
+
+                // Set session variables for cliente
+                $_SESSION['id'] = $cliente['id'];
+
+                // Redirect to the cliente index
+                header("Location: pagina_index_cliente.html");
+                exit();
+            } else {
+                echo "Senha inválida!";
+                exit();
+            }
+        }
+
+        // If cpf was not found in either table
+        echo "cpf não encontrado!";
     } else {
-        echo "Nome e senha são obrigatórios!";
+        echo "cpf e senha são obrigatórios!";
     }
 }
 
