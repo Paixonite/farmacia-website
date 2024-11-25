@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect to the specific index
                 if($_SESSION['nivel_acesso'] == 1)
                     header("Location: pagina_index_atendente.php");
-                if($_SESSION['nivel_acesso'] == 3)
+                if($_SESSION['nivel_acesso'] == 2)
                     header("Location: pagina_index_gerente.php");
                 if($_SESSION['nivel_acesso'] == 3)
                     header("Location: pagina_index_admin.php");
