@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['id'] = $cliente['id'];
 
                 // Redirect to the cliente index
-                header("Location: pagina_index_cliente.html");
+                header("Location: pagina_index_cliente.php");
                 exit();
             } else {
                 echo "Senha inválida!";
