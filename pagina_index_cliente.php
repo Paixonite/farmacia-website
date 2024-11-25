@@ -11,12 +11,13 @@
 </head>
 
 <body class="pagina-cliente">
+
     <h1>Área do cliente</h1>
     <a href="pagina_avisos.php">Acessar painel de avisos</a>
     <p> - </p>
-    <a href="pagina_pedido.html">Fazer pedido</a>
+    <a href="pagina_pedido.php">Fazer pedido</a>
     <p> - </p>
-    <a href="pagina_edição.html">Editar usuário</a>
+    <a href="pagina_edicao.php?id=<?= $SESSION_['id']; ?>" class="btn-edit">Editar credenciais</a>
 </body>
 
 </html>
